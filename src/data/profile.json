@@ -1,0 +1,20 @@
+{
+  "name": "Bok Yann",
+  "headline": "AI Engineer · Builder · Photographer",
+  "introduction": "I'm Bok Yann, an AI Engineer pursuing a part-time Master of Computing in Artificial Intelligence at the National University of Singapore. I love taking on new challenges and creating things that others can enjoy. Outside work, you'll often find me travelling with a camera—especially in Japan, my favourite country to explore.",
+  "location": "Singapore",
+  "availability": "Working as an AI Engineer while studying part-time at NUS.",
+  "experience": [
+    {"title": "AI Engineer / Technology Solutions Engineer", "organization": "Murata Electronics · Factory Business Engineering", "period": "Jun 2025 – Present", "summary": "Translate factory users' operational needs into AI and digital solutions, from requirements and scoping through delivery and adoption. Build AI/ML products and full-stack applications serving 50–100 users across Singapore and ASEAN, alongside RFID and automation projects that removed 1,700 hours of manual work annually."},
+    {"title": "Software Development Intern", "organization": "Murata Electronics · Factory Business Engineering", "period": "Jan 2024 – Jan 2025", "summary": "Built a full-stack inventory management application using Flask, FastAPI, JavaScript and Oracle SQL. Adopted factory-wide for stocktake, it saved more than 2,000 hours of manual work annually."},
+    {"title": "Data Science Intern", "organization": "Strides Digital (SMRT)", "period": "Jun 2023 – Dec 2023", "summary": "Trained a journey-time regression model that reduced travel-duration error by approximately 40%. Ran vehicle-routing simulations to optimise scheduling across 70–100 daily trips."},
+    {"title": "Business Analyst Intern, Overseas Operations", "organization": "PRISM+", "period": "Dec 2022 – Apr 2023", "summary": "Led a data engineering project connecting external sources to internal databases, saving $12,000–$15,000 annually in tooling and manual effort. Built Tableau and Python dashboards for regional sales and marketing decisions."}
+  ],
+  "capabilities": [
+    {"label": "AI systems", "detail": "RAG, multi-agent orchestration, tool calling and evaluation with LangGraph, LangChain and hosted or open-weight models."},
+    {"label": "Engineering & cloud", "detail": "Python, FastAPI, Flask, JavaScript, Oracle SQL, Docker and AWS. AWS certified in Machine Learning, Solutions Architecture and Cloud Practitioner."},
+    {"label": "From needs to delivery", "detail": "Requirements gathering, solution design, stakeholder engagement and adoption across technical and operational teams."}
+  ],
+  "interestsIntroduction": "I love travelling, photography and discovering new places. Japan is my favourite country to explore—my photographs are a way to share the moments and details I notice along the way.",
+  "links": {"github": "https://github.com/ChouBokYann", "linkedin": "https://www.linkedin.com/in/choubokyann/", "instagram": "https://www.instagram.com/o_o_films/"}
+}

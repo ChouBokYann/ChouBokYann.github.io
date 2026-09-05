@@ -1,0 +1,75 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import { withBase } from '@/lib/url';
+---
+
+<BaseLayout
+  title="Page not found | AI Engineering Portfolio"
+  description="The requested portfolio page could not be found."
+  indexable={false}
+  enhanceMotion={false}
+>
+  <section class="not-found" aria-labelledby="not-found-heading">
+    <div class="shell not-found-layout">
+      <h1 id="not-found-heading">Page not found</h1>
+      <div class="recovery">
+        <p>The address may be incorrect, or the page may have moved.</p>
+        <a href={withBase('/')}>Return home</a>
+      </div>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .not-found {
+    display: grid;
+    min-height: calc(100dvh - 8.5rem);
+    align-items: center;
+    padding-block: var(--space-7);
+  }
+
+  .not-found-layout {
+    display: grid;
+    grid-template-columns: minmax(0, 1.25fr) minmax(16rem, 0.75fr);
+    gap: var(--space-7);
+    align-items: end;
+  }
+
+  h1,
+  p {
+    margin: 0;
+  }
+
+  h1 {
+    max-width: 10ch;
+    font-family: var(--font-display);
+    font-size: var(--step-3);
+    font-weight: 400;
+    line-height: 1.04;
+    letter-spacing: -0.035em;
+  }
+
+  .recovery {
+    display: grid;
+    gap: var(--space-3);
+    padding-top: var(--space-5);
+    border-top: 1px solid var(--color-night-700);
+    color: var(--color-ink-muted);
+  }
+
+  .recovery a {
+    justify-self: start;
+    color: var(--color-vermilion-strong);
+  }
+
+  @media (max-width: 47.99rem) {
+    .not-found {
+      align-items: start;
+    }
+
+    .not-found-layout {
+      grid-template-columns: 1fr;
+      gap: var(--space-6);
+    }
+  }
+</style>

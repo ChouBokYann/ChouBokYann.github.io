@@ -1,0 +1,133 @@
+@import './tokens.css';
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  background: var(--color-night-950);
+  color: var(--color-ink);
+  font-family: var(--font-body);
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  min-width: 20rem;
+  min-height: 100dvh;
+  background:
+    radial-gradient(circle at 78% 8%, rgb(216 74 58 / 0.1), transparent 28rem),
+    linear-gradient(180deg, var(--color-night-900), var(--color-night-950) 45rem);
+  font-size: var(--step-0);
+  line-height: 1.65;
+}
+
+a {
+  color: inherit;
+  text-underline-offset: 0.24em;
+  transition:
+    color var(--duration-fast) var(--ease-out),
+    transform var(--duration-fast) var(--ease-out);
+}
+
+a:hover {
+  color: var(--color-vermilion-strong);
+}
+
+a:active {
+  transform: translateY(1px);
+}
+
+:focus-visible {
+  outline: 0.18rem solid var(--color-focus);
+  outline-offset: 0.22rem;
+}
+
+img,
+svg {
+  display: block;
+  max-width: 100%;
+}
+
+.shell {
+  width: min(calc(100% - 2rem), var(--measure));
+  margin-inline: auto;
+}
+
+.section {
+  padding-block: var(--space-8);
+}
+
+.story-section {
+  scroll-margin-top: 5.25rem;
+  border-top: 1px solid var(--color-night-700);
+}
+
+.section-layout {
+  display: grid;
+  grid-template-columns: minmax(8rem, 0.55fr) minmax(0, 1.8fr);
+  gap: var(--space-6);
+  align-items: start;
+}
+
+.section-layout h2 {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: var(--step-2);
+  font-weight: 400;
+  line-height: 1.08;
+  letter-spacing: -0.025em;
+}
+
+.eyebrow {
+  color: var(--color-vermilion-strong);
+  font-family: var(--font-mono);
+  font-size: var(--step--1);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.skip-link {
+  position: fixed;
+  z-index: var(--layer-skip-link);
+  top: var(--space-2);
+  left: var(--space-2);
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-small);
+  background: var(--color-ink);
+  color: var(--color-night-950);
+  transform: translateY(-160%);
+}
+
+.skip-link:focus {
+  color: var(--color-night-950);
+  transform: translateY(0);
+}
+
+@media (max-width: 47.99rem) {
+  .section {
+    padding-block: var(--space-7);
+  }
+
+  .section-layout {
+    grid-template-columns: 1fr;
+    gap: var(--space-5);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

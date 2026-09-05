@@ -1,0 +1,194 @@
+---
+import { render } from 'astro:content';
+import EvidenceSampler from '@/components/project/EvidenceSampler.vue';
+import ProjectLinks from '@/components/project/ProjectLinks.astro';
+import StructuredData from '@/components/seo/StructuredData.astro';
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import { getPublishedProjects, projectStaticPaths } from '@/lib/content/projects';
+import { projectJsonLd } from '@/lib/seo/structured-data';
+
+export async function getStaticPaths() {
+  return projectStaticPaths(await getPublishedProjects());
+}
+
+const { project } = Astro.props;
+const { Content } = await render(project);
+const evidenceGroups = [
+  { id: 'architecture', label: 'Architecture', items: project.data.architecture },
+  {
+    id: 'metrics',
+    label: 'Metrics',
+    items: project.data.metrics.map(
+      ({ label, value, context }) => `${label}: ${value}. ${context}`,
+    ),
+  },
+  {
+    id: 'code',
+    label: 'Code',
+    items: project.data.codeNotes.map(({ label, detail }) => `${label}: ${detail}`),
+  },
+  { id: 'stack', label: 'Stack', items: project.data.stack },
+].filter(({ items }) => items.length > 0);
+---
+
+<BaseLayout
+  title={`${project.data.title} | Project`}
+  description={project.data.summary}
+  type="article"
+>
+  <StructuredData
+    value={projectJsonLd({
+      title: project.data.title,
+      summary: project.data.summary,
+      date: project.data.date,
+    })}
+  />
+  <article class="shell section project-page">
+    <header class="project-header">
+      <p class="eyebrow">Project case study</p>
+      <h1>{project.data.title}</h1>
+      <p class="outcome">{project.data.outcome}</p>
+      <dl>
+        <div>
+          <dt>Role</dt>
+          <dd>{project.data.role}</dd>
+        </div>
+        <div>
+          <dt>Date</dt>
+          <dd>
+            <time datetime={project.data.date.toISOString()}>
+              {
+                project.data.date.toLocaleDateString('en', {
+                  year: 'numeric',
+                  month: 'short',
+                })
+              }
+            </time>
+          </dd>
+        </div>
+      </dl>
+      <ProjectLinks project={project} />
+    </header>
+    <EvidenceSampler groups={evidenceGroups} client:visible />
+    <section class="narrative" aria-label="Project narrative"><Content /></section>
+  </article>
+</BaseLayout>
+
+<style>
+  .project-page {
+    display: grid;
+    gap: var(--space-7);
+  }
+
+  .project-header {
+    display: grid;
+    grid-template-columns: minmax(0, 1.45fr) minmax(15rem, 0.55fr);
+    gap: var(--space-4) var(--space-6);
+    align-items: start;
+    padding-block: var(--space-6);
+    border-bottom: 1px solid var(--color-night-700);
+  }
+
+  .project-header > .eyebrow,
+  .project-header > h1,
+  .project-header > .outcome {
+    grid-column: 1;
+  }
+
+  .project-header > dl,
+  .project-header > :global(.project-links) {
+    grid-column: 2;
+  }
+
+  .project-header > dl {
+    grid-row: 2 / span 2;
+  }
+
+  .project-header > :global(.project-links) {
+    grid-row: 4;
+  }
+
+  .eyebrow,
+  h1,
+  .outcome,
+  dl {
+    margin: 0;
+  }
+
+  h1 {
+    max-width: 14ch;
+    font-family: var(--font-display);
+    font-size: var(--step-3);
+    font-weight: 400;
+    line-height: 1.05;
+    letter-spacing: -0.035em;
+  }
+
+  .outcome {
+    max-width: 48ch;
+    color: var(--color-ink-muted);
+    font-size: var(--step-1);
+  }
+
+  dl {
+    display: grid;
+    gap: var(--space-4);
+  }
+
+  dl div {
+    display: grid;
+    grid-template-columns: minmax(4rem, 0.45fr) minmax(0, 1fr);
+    gap: var(--space-3);
+  }
+
+  dt {
+    color: var(--color-ink-muted);
+    font-family: var(--font-mono);
+    font-size: var(--step--1);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+  }
+
+  dd {
+    margin: 0;
+  }
+
+  .narrative {
+    width: min(100%, 70ch);
+    font-size: var(--step-0);
+  }
+
+  .narrative :global(h2),
+  .narrative :global(h3) {
+    margin-block: var(--space-6) var(--space-3);
+    font-family: var(--font-display);
+    font-weight: 400;
+    line-height: 1.15;
+  }
+
+  .narrative :global(p),
+  .narrative :global(ul),
+  .narrative :global(ol) {
+    margin-block: 0 var(--space-4);
+  }
+
+  @media (max-width: 47.99rem) {
+    .project-page {
+      gap: var(--space-6);
+    }
+
+    .project-header {
+      grid-template-columns: 1fr;
+      padding-block: var(--space-5);
+    }
+
+    .project-header > .eyebrow,
+    .project-header > h1,
+    .project-header > .outcome,
+    .project-header > dl,
+    .project-header > :global(.project-links) {
+      grid-column: 1;
+      grid-row: auto;
+    }
+  }
+</style>

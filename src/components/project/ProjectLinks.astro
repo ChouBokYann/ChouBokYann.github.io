@@ -1,0 +1,48 @@
+---
+import type { CollectionEntry } from 'astro:content';
+
+interface Props {
+  project: CollectionEntry<'projects'>;
+}
+
+const { project } = Astro.props;
+const { mediumUrl, repositoryUrl, demoUrl } = project.data;
+const hasLinks = Boolean(mediumUrl || repositoryUrl || demoUrl);
+---
+
+{
+  hasLinks && (
+    <nav class="project-links" aria-label="Project links">
+      {mediumUrl && (
+        <a href={mediumUrl} target="_blank" rel="noopener noreferrer">
+          Read the full article
+        </a>
+      )}
+      {repositoryUrl && (
+        <a href={repositoryUrl} target="_blank" rel="noopener noreferrer">
+          View source
+        </a>
+      )}
+      {demoUrl && (
+        <a href={demoUrl} target="_blank" rel="noopener noreferrer">
+          Open demo
+        </a>
+      )}
+    </nav>
+  )
+}
+
+<style>
+  .project-links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-3) var(--space-4);
+  }
+
+  .project-links a {
+    color: var(--color-ink);
+    font-weight: 600;
+    text-decoration-color: var(--color-vermilion);
+    text-decoration-thickness: 0.12em;
+  }
+</style>

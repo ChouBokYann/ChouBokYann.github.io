@@ -1,0 +1,27 @@
+---
+import AboutSection from '@/components/home/AboutSection.astro';
+import ContactSection from '@/components/home/ContactSection.astro';
+import ExperienceSection from '@/components/home/ExperienceSection.astro';
+import HeroSection from '@/components/home/HeroSection.astro';
+import InterestsSection from '@/components/home/InterestsSection.astro';
+import ProjectsSection from '@/components/home/ProjectsSection.astro';
+import StructuredData from '@/components/seo/StructuredData.astro';
+import { profile } from '@/data/profile';
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import { personJsonLd } from '@/lib/seo/structured-data';
+
+const title = profile ? `${profile.name} | ${profile.headline}` : 'AI Engineering Portfolio';
+const description = profile
+  ? profile.introduction
+  : 'A local preview of an AI engineering portfolio awaiting owner-approved profile content.';
+---
+
+<BaseLayout title={title} description={description} indexable={Boolean(profile)}>
+  {profile && <StructuredData value={personJsonLd(profile)} />}
+  <HeroSection profile={profile} />
+  <AboutSection profile={profile} />
+  <ExperienceSection profile={profile} />
+  <ProjectsSection />
+  <InterestsSection profile={profile} />
+  <ContactSection profile={profile} />
+</BaseLayout>

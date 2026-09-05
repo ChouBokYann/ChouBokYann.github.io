@@ -1,79 +1,17 @@
-![thumbnail](https://user-images.githubusercontent.com/16558205/180779213-ea740975-3df1-460a-a964-0a623ee25872.png)
+# Bok Yann's portfolio
 
-### Live - https://react-portfolio-template.netlify.app/
+Astro, TypeScript and Vue portfolio with responsive Japanese landscape artwork and a photography gallery.
 
-### Demo Video - https://www.youtube.com/watch?v=62_HLbx2zLQ&t=9s
+## Local development
 
-### Tutorials
+Use Node 22.12 or newer. Run `npm ci` and `npm run dev`.
 
-Youtube - https://www.youtube.com/watch?v=8cmJ2kR4SpM
+## Publish
 
-Blog - https://blog.chetanverma.com/how-to-build-a-portfolio-website-using-nextjs-and-tailwindcss
+Push to `main`. GitHub Actions runs unit tests, checks publication readiness, builds the static site, and deploys GitHub Pages at https://choubokyann.github.io/.
 
-### Features - 
+Personal copy is in `src/data/profile.json`; gallery entries are in `src/data/gallery`. No résumé PDF is published. Project case studies are forthcoming. The approved option C trees are static; clouds, petals, headline and character have separate motion.
 
-- Modern Stack (Next.js + TailwindCSS)
-- Minimal Design
-- Easy To Browse
-- Easy To Customize your details With GUI
-- Blog Crud (Create, Read, Update, Delete blog with easy to use UI).
-- Dark Mode
+## Recovery
 
-
-### Sections
-
-- Header
-- Work
-- Services
-- About
-- Contact
-- Markdown Blog
-
-
-### How To Use
-
-- Clone this repo
-- run `yarn`
-- `yarn dev`
-
-
-### How To Deploy - 
-
-- There are many ways to Deploy this repo.
-- here we are gonna use netlify
-- Login into netlify with github
-- after login select the forked repo or the repo you want to deploy
-- after selecting netlify will automatially deploy your website.
-
-Quickes way to deploy this repo - 
-
-[![Deploy To Netlify](https://www.netlify.com/img/deploy/button.svg)](https://app.netlify.com/start/deploy?repository=https://github.com/chetanverma16/react-portfolio-template)
-
-
-### How To Contribute - 
-
-I would be very happy to review your PRs and all the awesome things that you can improve on this portfolio.
-
-
-### Tech Stack Used - 
-- Next.js
-- TailwindCSS
-
-
-### Thanks
-
-If you liked this portfolio template, don't forget to give it a ⭐.
-
-## Awesome Contributors
-[@Aryan3212](https://github.com/Aryan3212) [@achu-krishna](https://github.com/achu-krishna)
-
-## Supporting
-Many hours of hard work have gone into this project. Your support will be very appreciated!
-
-[!["Buy Me A Coffee"](https://www.buymeacoffee.com/assets/img/custom_images/orange_img.png)](https://www.buymeacoffee.com/chetanverma)
-
-
-
-
-
-
+The previous Next.js website is preserved on `backup/pre-portfolio-2026-09-05`. New deployments can be rolled back by reverting the release commit and restoring the desired Pages source settings.

@@ -1,0 +1,104 @@
+---
+import { Image } from 'astro:assets';
+import type { CollectionEntry } from 'astro:content';
+import { withBase } from '@/lib/url';
+
+interface Props {
+  project: CollectionEntry<'projects'>;
+}
+
+const { project } = Astro.props;
+const projectHref = withBase(`/projects/${project.id}/`);
+---
+
+<article class="project-card">
+  <Image
+    class="thumbnail"
+    src={project.data.thumbnail}
+    alt={project.data.thumbnailAlt}
+    loading="lazy"
+  />
+  <div class="project-copy">
+    <h3><a href={projectHref}>{project.data.title}</a></h3>
+    <p class="outcome">{project.data.outcome}</p>
+    <ul class="stack" aria-label={`${project.data.title} technology stack`}>
+      {project.data.stack.map((item) => <li>{item}</li>)}
+    </ul>
+  </div>
+</article>
+
+<style>
+  .project-card {
+    display: grid;
+    height: 100%;
+    overflow: hidden;
+    border: 1px solid var(--color-night-700);
+    border-radius: var(--radius-small);
+    background: var(--color-night-900);
+    transition:
+      border-color var(--duration-fast) var(--ease-out),
+      transform var(--duration-fast) var(--ease-out);
+  }
+
+  .project-card:focus-within,
+  .project-card:hover {
+    border-color: var(--color-vermilion);
+    transform: translateY(-0.2rem);
+  }
+
+  .thumbnail {
+    width: 100%;
+    aspect-ratio: 3 / 2;
+    object-fit: cover;
+    border-bottom: 1px solid var(--color-night-700);
+  }
+
+  .project-copy {
+    display: grid;
+    align-content: start;
+    gap: var(--space-3);
+    padding: var(--space-5);
+  }
+
+  h3,
+  p,
+  ul {
+    margin: 0;
+  }
+
+  h3 {
+    font-size: var(--step-1);
+    font-weight: 500;
+  }
+
+  h3 a {
+    text-decoration-thickness: 0.08em;
+    text-decoration-color: transparent;
+  }
+
+  h3 a:hover {
+    text-decoration-color: currentColor;
+  }
+
+  .outcome {
+    color: var(--color-ink-muted);
+  }
+
+  .stack {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-1) var(--space-3);
+    padding: 0;
+    color: var(--color-ink-muted);
+    font-family: var(--font-mono);
+    font-size: var(--step--1);
+    list-style-position: inside;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .project-card:focus-within,
+    .project-card:hover {
+      transform: none;
+    }
+  }
+</style>

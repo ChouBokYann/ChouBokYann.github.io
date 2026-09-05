@@ -1,0 +1,83 @@
+---
+import { withBase } from '@/lib/url';
+
+const items: ReadonlyArray<readonly [string, string]> = [
+  ['About', '/#about'],
+  ['Experience', '/#experience'],
+  ['Projects', '/#projects'],
+  ['Interests', '/#interests'],
+  ['Contact', '/#contact'],
+];
+---
+
+<header class="site-header">
+  <nav class="shell nav" aria-label="Primary">
+    <a class="brand" href={withBase('/')}>Portfolio</a>
+    <ul>
+      {
+        items.map(([label, href]) => (
+          <li>
+            <a href={withBase(href)}>{label}</a>
+          </li>
+        ))
+      }
+    </ul>
+  </nav>
+</header>
+
+<style>
+  .site-header {
+    position: sticky;
+    z-index: var(--layer-nav);
+    top: 0;
+    border-bottom: 1px solid rgb(243 236 223 / 0.08);
+    background: rgb(13 16 24 / 0.88);
+    backdrop-filter: blur(1rem);
+  }
+
+  .nav {
+    display: flex;
+    min-height: 4.25rem;
+    max-height: 5rem;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-4);
+  }
+
+  .brand {
+    flex: none;
+    font-family: var(--font-body);
+    font-size: var(--step-1);
+    text-decoration: none;
+  }
+
+  ul {
+    display: flex;
+    margin: 0;
+    padding: 0;
+    gap: clamp(0.75rem, 2vw, 1.75rem);
+    list-style: none;
+  }
+
+  li {
+    flex: none;
+    font-size: var(--step--1);
+    white-space: nowrap;
+  }
+
+  @media (max-width: 47.99rem) {
+    ul {
+      max-width: 72vw;
+      overflow-x: auto;
+      overscroll-behavior-inline: contain;
+      scrollbar-width: thin;
+    }
+  }
+
+  @media (prefers-reduced-transparency: reduce) {
+    .site-header {
+      background: var(--color-night-950);
+      backdrop-filter: none;
+    }
+  }
+</style>

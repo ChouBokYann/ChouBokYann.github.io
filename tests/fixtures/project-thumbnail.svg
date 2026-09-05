@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 800" role="img" aria-labelledby="title description">
+  <title id="title">Test-only project thumbnail</title>
+  <desc id="description">A restrained geometric fixture used only by automated route tests.</desc>
+  <rect width="1200" height="800" fill="#141824"/>
+  <path d="M120 600 430 220l210 260 180-220 260 340Z" fill="#2a3040"/>
+  <circle cx="870" cy="210" r="84" fill="#d84a3a"/>
+</svg>

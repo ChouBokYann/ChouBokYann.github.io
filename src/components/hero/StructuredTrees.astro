@@ -1,0 +1,76 @@
+---
+import { withBase } from '@/lib/url';
+const sprite = withBase('/art/hero-v2/structured-trees/branch-key.png');
+const tree = withBase('/art/hero-v2/structured-trees/rooted-tree-flowers-v2.png');
+---
+<svg width="0" height="0" aria-hidden="true" style="position:absolute">
+  <defs>
+    <filter id="sakura-key" color-interpolation-filters="sRGB" x="-2%" y="-2%" width="104%" height="104%">
+      <!-- Remove only green key pixels, preserving neutral petals and dark wood. -->
+      <feColorMatrix type="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  10 -20 10 0 1" />
+      <feComposite in2="SourceGraphic" operator="in" />
+    </filter>
+  </defs>
+</svg>
+<div class="structured-trees" data-structured-trees aria-hidden="true">
+  <div class="bough-anchor bough-anchor--upper-right" data-branch-anchor="upper-right">
+    <img class="bough" data-bough src={sprite} width="1536" height="1024" alt="" decoding="async" />
+  </div>
+  {['left', 'right'].map((position) => (
+    <div class={`rooted-tree rooted-tree--${position}`} data-branch-anchor={position}>
+      <img class="tree-trunk" data-fixed-trunk src={tree} width="1024" height="1536" alt="" decoding="async" />
+      <img class="tree-crown" data-bough src={tree} width="1024" height="1536" alt="" decoding="async" />
+    </div>
+  ))}
+</div>
+<style>
+  .structured-trees { position:absolute; inset:0; z-index:11; pointer-events:none; }
+  .bough-anchor { position:absolute; width:37%; aspect-ratio:3/2; }
+  .bough-anchor--upper-right { left:79%; top:-18%; transform:rotate(7deg); }
+  .bough-anchor--left { left:-20%; top:34%; width:42%; transform:scaleX(-1) rotate(-24deg); }
+  .bough-anchor--lower-right { left:80%; top:55%; width:36%; transform:rotate(19deg); }
+  .bough {
+    display:block; width:100%; height:100%; object-fit:contain;
+    filter:url('#sakura-key'); transform-origin:100% 75%;
+    animation:anchored-bough 7s ease-in-out infinite alternate;
+  }
+  .bough-anchor--left .bough { animation-duration:8.3s; animation-delay:-3.4s; }
+  .bough-anchor--lower-right .bough { animation-duration:6.8s; animation-delay:-1.7s; }
+  .rooted-tree { position:absolute; bottom:-3%; width:25%; aspect-ratio:2/3; }
+  .rooted-tree--left { left:0; transform:scaleX(-1); }
+  .rooted-tree--right { right:0; width:23%; }
+  .tree-trunk, .tree-crown { position:absolute; inset:0; width:100%; height:100%; filter:url('#sakura-key'); object-fit:contain; }
+  .tree-trunk { clip-path:inset(70% 0 0 0); }
+  .tree-crown { clip-path:inset(0 0 28% 0); transform-origin:67% 71%; animation:rooted-crown 8s ease-in-out infinite alternate; }
+  .rooted-tree--right .tree-crown { animation-duration:9.5s; animation-delay:-3s; }
+  @keyframes rooted-crown { from { transform:rotate(-.65deg); } to { transform:rotate(.65deg); } }
+  .structured-trees[data-paused] .tree-crown { animation-play-state:paused; }
+  @keyframes anchored-bough { from { transform:rotate(-1.3deg); } to { transform:rotate(1.3deg); } }
+  .structured-trees[data-paused] .bough { animation-play-state:paused; }
+  @media (orientation:portrait) {
+    .bough-anchor--upper-right { left:78%; top:-5%; width:57%; transform:rotate(5deg); }
+    .rooted-tree--left { left:-8%; width:52%; bottom:0; }
+    .rooted-tree--right { right:-8%; width:47%; bottom:0; }
+    .bough-anchor--left { left:-42%; top:49%; width:70%; transform:scaleX(-1) rotate(-20deg); }
+    .bough-anchor--lower-right { left:75%; top:66%; width:67%; transform:rotate(24deg); }
+  }
+  @media (prefers-reduced-motion:reduce) { .bough, .tree-crown { animation:none; } }
+</style>
+<script>
+  function setupTrees() {
+    document.querySelectorAll<HTMLElement>('[data-structured-trees]:not([data-ready])').forEach((trees) => {
+      trees.dataset.ready = 'true';
+      let onscreen = true;
+      const pause = () => {
+        const paused = !onscreen || document.hidden;
+        trees.toggleAttribute('data-paused', paused);
+        trees.closest('[data-hero-artwork]')?.toggleAttribute('data-atmosphere-paused', paused);
+      };
+      const observer = new IntersectionObserver(([entry]) => { onscreen = entry?.isIntersecting ?? false; pause(); });
+      observer.observe(trees);
+      document.addEventListener('visibilitychange', pause);
+      document.addEventListener('astro:before-swap', () => { observer.disconnect(); document.removeEventListener('visibilitychange', pause); }, {once:true});
+    });
+  }
+  setupTrees(); document.addEventListener('astro:page-load', setupTrees);
+</script>

@@ -1,0 +1,633 @@
+---
+import { HERO_LAYOUT_LAYERS } from './layout-lab';
+---
+
+<div class="hero-layout-lab" data-hero-layout-lab>
+  <button
+    class="hero-layout-lab__toggle"
+    type="button"
+    aria-controls="hero-layout-lab-panel"
+    aria-expanded="false"
+    aria-label="Open hero layout lab"
+    data-layout-toggle
+  >
+    Layout lab
+  </button>
+
+  <section
+    class="hero-layout-lab__panel"
+    id="hero-layout-lab-panel"
+    aria-label="Hero layout lab"
+    data-layout-panel
+    hidden
+  >
+    <div class="hero-layout-lab__heading">
+      <strong>Hero layout lab</strong>
+      <span>Local development only</span>
+    </div>
+
+    <p class="hero-layout-lab__mode">
+      <output data-layout-breakpoint>Wide</output> view · all values in %
+    </p>
+
+    <label>
+      <span>Layer</span>
+      <select aria-label="Layer" data-layout-layer>
+        {HERO_LAYOUT_LAYERS.map((layer) => <option value={layer}>{layer}</option>)}
+      </select>
+    </label>
+
+    <div class="hero-layout-lab__fields">
+      <label>
+        <span>Horizontal position</span>
+        <input type="number" step="0.1" data-layout-field="x" />
+      </label>
+      <label>
+        <span>Vertical position</span>
+        <input type="number" step="0.1" data-layout-field="y" />
+      </label>
+      <label>
+        <span>Width</span>
+        <input type="number" min="2" step="0.1" data-layout-field="width" />
+      </label>
+      <label>
+        <span>Height</span>
+        <input type="number" min="2" step="0.1" data-layout-field="height" />
+      </label>
+    </div>
+
+    <div class="hero-layout-lab__actions">
+      <button type="button" data-layout-reset>Reset this view</button>
+      <button type="button" data-layout-copy>Copy responsive JSON</button>
+    </div>
+
+    <details>
+      <summary>Export JSON</summary>
+      <textarea rows="8" readonly aria-label="Responsive layout export" data-layout-export
+      ></textarea>
+    </details>
+    <output class="hero-layout-lab__status" aria-live="polite" data-layout-status></output>
+  </section>
+
+  <div class="hero-layout-lab__canvas" data-layout-canvas hidden>
+    {
+      HERO_LAYOUT_LAYERS.map((layer) => (
+        <div
+          class="hero-layout-lab__box"
+          data-layout-handle={layer}
+          role="button"
+          tabindex="0"
+          aria-label={`Move ${layer} layer`}
+        >
+          <span>{layer}</span>
+          <button
+            class="hero-layout-lab__resize"
+            type="button"
+            tabindex="-1"
+            aria-label={`Resize ${layer} layer`}
+            data-layout-resize
+          />
+        </div>
+      ))
+    }
+  </div>
+</div>
+
+<script>
+  import {
+    HERO_LAYOUT_LAYERS,
+    getHeroLayoutBreakpoint,
+    moveHeroLayoutRect,
+    rectToHeroLayout,
+    resizeHeroLayoutRect,
+    serializeHeroLayouts,
+    type HeroLayout,
+    type HeroLayoutBreakpoint,
+    type HeroLayoutLayer,
+    type HeroLayoutRect,
+    type ResponsiveHeroLayouts,
+  } from './layout-lab';
+
+  const STORAGE_KEY = 'hero-layout-lab:v2';
+  const EDITED_PROPERTIES = [
+    'inset',
+    'top',
+    'right',
+    'bottom',
+    'left',
+    'width',
+    'height',
+    'transform',
+    'aspect-ratio',
+  ];
+
+  const cloneLayout = (layout: HeroLayout): HeroLayout =>
+    Object.fromEntries(
+      Object.entries(layout).map(([layer, rect]) => [layer, rect ? { ...rect } : rect]),
+    );
+
+  const isLayoutRect = (value: unknown): value is HeroLayoutRect => {
+    if (!value || typeof value !== 'object') return false;
+    return ['x', 'y', 'width', 'height'].every((key) =>
+      Number.isFinite((value as Record<string, unknown>)[key]),
+    );
+  };
+
+  const loadLayouts = (): ResponsiveHeroLayouts => {
+    try {
+      const value = JSON.parse(localStorage.getItem(STORAGE_KEY) ?? '{}') as Record<
+        string,
+        unknown
+      >;
+      const breakpoints = (value.breakpoints ?? value) as Record<string, unknown>;
+      const layouts: ResponsiveHeroLayouts = {};
+
+      for (const breakpoint of ['compact', 'wide'] as const) {
+        const candidate = breakpoints[breakpoint];
+        if (!candidate || typeof candidate !== 'object') continue;
+        const layout: HeroLayout = {};
+        for (const layer of HERO_LAYOUT_LAYERS) {
+          const rect = (candidate as Record<string, unknown>)[layer];
+          if (isLayoutRect(rect)) layout[layer] = { ...rect };
+        }
+        if (Object.keys(layout).length > 0) layouts[breakpoint] = layout;
+      }
+      return layouts;
+    } catch {
+      return {};
+    }
+  };
+
+  function setupHeroLayoutLab(root: HTMLElement): void {
+    if (root.dataset.layoutReady) return;
+    root.dataset.layoutReady = 'true';
+
+    const stage = root.closest<HTMLElement>('.hero-stage');
+    const artwork = stage?.querySelector<HTMLElement>('[data-hero-artwork]');
+    const toggle = root.querySelector<HTMLButtonElement>('[data-layout-toggle]');
+    const panel = root.querySelector<HTMLElement>('[data-layout-panel]');
+    const canvas = root.querySelector<HTMLElement>('[data-layout-canvas]');
+    const layerSelect = root.querySelector<HTMLSelectElement>('[data-layout-layer]');
+    const breakpointOutput = root.querySelector<HTMLOutputElement>('[data-layout-breakpoint]');
+    const exportOutput = root.querySelector<HTMLTextAreaElement>('[data-layout-export]');
+    const status = root.querySelector<HTMLOutputElement>('[data-layout-status]');
+
+    if (
+      !stage ||
+      !artwork ||
+      !toggle ||
+      !panel ||
+      !canvas ||
+      !layerSelect ||
+      !breakpointOutput ||
+      !exportOutput ||
+      !status
+    ) {
+      return;
+    }
+
+    const elements = Object.fromEntries(
+      HERO_LAYOUT_LAYERS.map((layer) => [
+        layer,
+        artwork.querySelector<HTMLElement>(`[data-layer="${layer}"]`),
+      ]),
+    ) as Record<HeroLayoutLayer, HTMLElement | null>;
+    const handles = Object.fromEntries(
+      HERO_LAYOUT_LAYERS.map((layer) => [
+        layer,
+        root.querySelector<HTMLElement>(`[data-layout-handle="${layer}"]`),
+      ]),
+    ) as Record<HeroLayoutLayer, HTMLElement | null>;
+
+    const layouts = loadLayouts();
+    const defaults: ResponsiveHeroLayouts = {};
+    let breakpoint: HeroLayoutBreakpoint = getHeroLayoutBreakpoint(window.innerWidth);
+    let activeLayer: HeroLayoutLayer = 'sky';
+    let isOpen = false;
+
+    const clearEditedStyles = (): void => {
+      for (const element of Object.values(elements)) {
+        if (!element) continue;
+        for (const property of EDITED_PROPERTIES) element.style.removeProperty(property);
+      }
+    };
+
+    const captureCurrentLayout = (): HeroLayout => {
+      const stageRect = stage.getBoundingClientRect();
+      const layout: HeroLayout = {};
+      for (const layer of HERO_LAYOUT_LAYERS) {
+        const element = elements[layer];
+        if (element) layout[layer] = rectToHeroLayout(element.getBoundingClientRect(), stageRect);
+      }
+      return layout;
+    };
+
+    const syncExport = (): void => {
+      exportOutput.value = serializeHeroLayouts(layouts);
+    };
+
+    const persist = (): void => {
+      localStorage.setItem(STORAGE_KEY, serializeHeroLayouts(layouts));
+      syncExport();
+    };
+
+    const syncFields = (): void => {
+      const rect = layouts[breakpoint]?.[activeLayer];
+      if (!rect) return;
+      root.querySelectorAll<HTMLInputElement>('[data-layout-field]').forEach((input) => {
+        const field = input.dataset.layoutField as keyof HeroLayoutRect;
+        input.value = String(rect[field]);
+      });
+      layerSelect.value = activeLayer;
+      for (const layer of HERO_LAYOUT_LAYERS) {
+        handles[layer]?.toggleAttribute('data-layout-active', layer === activeLayer);
+      }
+    };
+
+    const applyLayout = (): void => {
+      const layout = layouts[breakpoint];
+      if (!layout) return;
+      for (const layer of HERO_LAYOUT_LAYERS) {
+        const rect = layout[layer];
+        const element = elements[layer];
+        const handle = handles[layer];
+        if (!rect || !element || !handle) continue;
+
+        element.style.inset = 'auto';
+        element.style.top = `${rect.y}%`;
+        element.style.left = `${rect.x}%`;
+        element.style.width = `${rect.width}%`;
+        element.style.height = `${rect.height}%`;
+        element.style.transform = 'none';
+        element.style.aspectRatio = 'auto';
+
+        handle.style.top = `${rect.y}%`;
+        handle.style.left = `${rect.x}%`;
+        handle.style.width = `${rect.width}%`;
+        handle.style.height = `${rect.height}%`;
+      }
+      syncFields();
+      syncExport();
+    };
+
+    const ensureBreakpointLayout = (next: HeroLayoutBreakpoint): void => {
+      if (!defaults[next]) {
+        clearEditedStyles();
+        defaults[next] = captureCurrentLayout();
+      }
+      layouts[next] ??= cloneLayout(defaults[next] ?? {});
+    };
+
+    const enterBreakpoint = (next: HeroLayoutBreakpoint): void => {
+      breakpoint = next;
+      breakpointOutput.value = next === 'compact' ? 'Compact' : 'Wide';
+      // Saved lab edits are deliberately preview-only. They must never replace the
+      // authored responsive scene on an ordinary page load.
+      if (isOpen) {
+        ensureBreakpointLayout(next);
+        applyLayout();
+      } else {
+        syncExport();
+      }
+    };
+
+    const setActiveLayer = (layer: HeroLayoutLayer): void => {
+      activeLayer = layer;
+      syncFields();
+    };
+
+    const updateActiveRect = (rect: HeroLayoutRect): void => {
+      const layout = layouts[breakpoint];
+      if (!layout) return;
+      layout[activeLayer] = rect;
+      applyLayout();
+      persist();
+    };
+
+    const startPointerEdit = (
+      event: PointerEvent,
+      layer: HeroLayoutLayer,
+      kind: 'move' | 'resize',
+    ): void => {
+      if (event.button !== 0) return;
+      event.preventDefault();
+      event.stopPropagation();
+      setActiveLayer(layer);
+      const startRect = layouts[breakpoint]?.[layer];
+      if (!startRect) return;
+      const start = { x: event.clientX, y: event.clientY };
+      const stageRect = stage.getBoundingClientRect();
+
+      const onMove = (moveEvent: PointerEvent): void => {
+        const delta = { x: moveEvent.clientX - start.x, y: moveEvent.clientY - start.y };
+        updateActiveRect(
+          kind === 'resize'
+            ? resizeHeroLayoutRect(startRect, delta, stageRect)
+            : moveHeroLayoutRect(startRect, delta, stageRect),
+        );
+      };
+      const onEnd = (): void => {
+        window.removeEventListener('pointermove', onMove);
+        window.removeEventListener('pointerup', onEnd);
+      };
+      window.addEventListener('pointermove', onMove);
+      window.addEventListener('pointerup', onEnd, { once: true });
+    };
+
+    for (const layer of HERO_LAYOUT_LAYERS) {
+      const handle = handles[layer];
+      if (!handle) continue;
+      handle.addEventListener('pointerdown', (event) => {
+        const target = event.target as HTMLElement;
+        startPointerEdit(event, layer, target.closest('[data-layout-resize]') ? 'resize' : 'move');
+      });
+      handle.addEventListener('keydown', (event) => {
+        if (!['ArrowUp', 'ArrowRight', 'ArrowDown', 'ArrowLeft'].includes(event.key)) return;
+        event.preventDefault();
+        setActiveLayer(layer);
+        const rect = layouts[breakpoint]?.[layer];
+        if (!rect) return;
+        const distance = event.shiftKey ? 10 : 1;
+        const delta = {
+          x: event.key === 'ArrowLeft' ? -distance : event.key === 'ArrowRight' ? distance : 0,
+          y: event.key === 'ArrowUp' ? -distance : event.key === 'ArrowDown' ? distance : 0,
+        };
+        updateActiveRect(moveHeroLayoutRect(rect, delta, stage.getBoundingClientRect()));
+      });
+    }
+
+    toggle.addEventListener('click', () => {
+      isOpen = !isOpen;
+      panel.hidden = !isOpen;
+      canvas.hidden = !isOpen;
+      stage.toggleAttribute('data-layout-lab-active', isOpen);
+      toggle.setAttribute('aria-expanded', String(isOpen));
+      toggle.setAttribute('aria-label', `${isOpen ? 'Close' : 'Open'} hero layout lab`);
+      if (isOpen) {
+        ensureBreakpointLayout(breakpoint);
+        applyLayout();
+      }
+    });
+
+    layerSelect.addEventListener('change', () => {
+      setActiveLayer(layerSelect.value as HeroLayoutLayer);
+    });
+
+    root.querySelectorAll<HTMLInputElement>('[data-layout-field]').forEach((input) => {
+      input.addEventListener('change', () => {
+        const rect = layouts[breakpoint]?.[activeLayer];
+        const field = input.dataset.layoutField as keyof HeroLayoutRect;
+        const value = Number(input.value);
+        if (!rect || !Number.isFinite(value)) return;
+        updateActiveRect({
+          ...rect,
+          [field]: field === 'width' || field === 'height' ? Math.max(2, value) : value,
+        });
+      });
+    });
+
+    root.querySelector<HTMLButtonElement>('[data-layout-reset]')?.addEventListener('click', () => {
+      layouts[breakpoint] = cloneLayout(defaults[breakpoint] ?? {});
+      applyLayout();
+      persist();
+      status.value = `${breakpoint === 'compact' ? 'Compact' : 'Wide'} view reset.`;
+    });
+
+    root
+      .querySelector<HTMLButtonElement>('[data-layout-copy]')
+      ?.addEventListener('click', async () => {
+        try {
+          await navigator.clipboard.writeText(serializeHeroLayouts(layouts));
+          status.value = 'Responsive layout JSON copied.';
+        } catch {
+          exportOutput.focus();
+          exportOutput.select();
+          status.value = 'Select and copy the export JSON below.';
+        }
+      });
+
+    const observer = new ResizeObserver(() => {
+      const next = getHeroLayoutBreakpoint(window.innerWidth);
+      if (next !== breakpoint) enterBreakpoint(next);
+      else if (isOpen) applyLayout();
+    });
+    observer.observe(stage);
+    document.addEventListener('astro:before-swap', () => observer.disconnect(), { once: true });
+
+    enterBreakpoint(breakpoint);
+  }
+
+  document.querySelectorAll<HTMLElement>('[data-hero-layout-lab]').forEach(setupHeroLayoutLab);
+</script>
+
+<style>
+  .hero-layout-lab__toggle,
+  .hero-layout-lab__panel {
+    position: fixed;
+    z-index: 101;
+    right: 1rem;
+    border: 1px solid rgb(255 255 255 / 0.28);
+    border-radius: 0.5rem;
+    background: rgb(10 15 28 / 0.94);
+    color: #f8f4ea;
+    font:
+      500 0.78rem/1.25 ui-monospace,
+      SFMono-Regular,
+      Consolas,
+      monospace;
+    box-shadow: 0 1rem 3rem rgb(0 0 0 / 0.36);
+  }
+
+  .hero-layout-lab__toggle {
+    bottom: 1rem;
+    min-height: 2.5rem;
+    padding: 0.6rem 0.85rem;
+    cursor: pointer;
+  }
+
+  .hero-layout-lab__panel {
+    bottom: 4.25rem;
+    display: grid;
+    width: min(22rem, calc(100vw - 2rem));
+    max-height: calc(100dvh - 6rem);
+    gap: 0.8rem;
+    overflow: auto;
+    padding: 1rem;
+  }
+
+  .hero-layout-lab__panel[hidden],
+  .hero-layout-lab__canvas[hidden] {
+    display: none;
+  }
+
+  .hero-layout-lab__heading {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 0.75rem;
+  }
+
+  .hero-layout-lab__heading strong {
+    font-size: 0.92rem;
+  }
+
+  .hero-layout-lab__heading span,
+  .hero-layout-lab__mode,
+  .hero-layout-lab__status {
+    color: #b7c3d8;
+    font-size: 0.68rem;
+  }
+
+  .hero-layout-lab__mode {
+    margin: 0;
+  }
+
+  .hero-layout-lab label {
+    display: grid;
+    gap: 0.3rem;
+  }
+
+  .hero-layout-lab label > span {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .hero-layout-lab select,
+  .hero-layout-lab input,
+  .hero-layout-lab textarea,
+  .hero-layout-lab__actions button {
+    min-width: 0;
+    border: 1px solid rgb(255 255 255 / 0.22);
+    border-radius: 0.3rem;
+    background: #111a2e;
+    color: #fff;
+    font: inherit;
+  }
+
+  .hero-layout-lab select,
+  .hero-layout-lab input,
+  .hero-layout-lab__actions button {
+    min-height: 2.1rem;
+    padding: 0.35rem 0.5rem;
+  }
+
+  .hero-layout-lab textarea {
+    width: 100%;
+    margin-top: 0.45rem;
+    padding: 0.55rem;
+    resize: vertical;
+    font-size: 0.66rem;
+  }
+
+  .hero-layout-lab__fields {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.65rem;
+  }
+
+  .hero-layout-lab__actions {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.5rem;
+  }
+
+  .hero-layout-lab__actions button {
+    cursor: pointer;
+  }
+
+  .hero-layout-lab__status {
+    min-height: 1em;
+  }
+
+  .hero-layout-lab__canvas {
+    position: absolute;
+    z-index: 100;
+    inset: 0;
+    overflow: hidden;
+    touch-action: none;
+    pointer-events: none;
+  }
+
+  .hero-layout-lab__box {
+    position: absolute;
+    border: 2px dashed #78e6ff;
+    background: rgb(53 205 238 / 0.055);
+    color: #07111f;
+    cursor: move;
+    outline: 1px solid rgb(5 12 24 / 0.7);
+    outline-offset: 1px;
+    pointer-events: auto;
+  }
+
+  .hero-layout-lab__box[data-layout-active] {
+    border-style: solid;
+    border-color: #fff06a;
+    background: rgb(255 240 106 / 0.08);
+  }
+
+  .hero-layout-lab__box[data-layout-handle='sky'] {
+    z-index: 1;
+  }
+
+  .hero-layout-lab__box[data-layout-handle='sun'] {
+    z-index: 2;
+  }
+
+  .hero-layout-lab__box[data-layout-handle='title'] {
+    z-index: 3;
+  }
+
+  .hero-layout-lab__box[data-layout-handle='fuji'] {
+    z-index: 4;
+  }
+
+  .hero-layout-lab__box > span {
+    position: absolute;
+    top: 0;
+    left: 0;
+    padding: 0.2rem 0.35rem;
+    background: #78e6ff;
+    font:
+      700 0.68rem/1 ui-monospace,
+      SFMono-Regular,
+      Consolas,
+      monospace;
+    text-transform: uppercase;
+    pointer-events: none;
+  }
+
+  .hero-layout-lab__box[data-layout-active] > span {
+    background: #fff06a;
+  }
+
+  .hero-layout-lab__resize {
+    position: absolute;
+    right: -0.35rem;
+    bottom: -0.35rem;
+    width: 0.9rem;
+    height: 0.9rem;
+    padding: 0;
+    border: 2px solid #07111f;
+    border-radius: 0.15rem;
+    background: #78e6ff;
+    cursor: nwse-resize;
+  }
+
+  .hero-layout-lab__box[data-layout-active] .hero-layout-lab__resize {
+    background: #fff06a;
+  }
+
+  @media (max-width: 35rem) {
+    .hero-layout-lab__panel {
+      right: 0.5rem;
+      bottom: 3.75rem;
+      width: calc(100vw - 1rem);
+    }
+
+    .hero-layout-lab__toggle {
+      right: 0.5rem;
+      bottom: 0.5rem;
+    }
+  }
+</style>

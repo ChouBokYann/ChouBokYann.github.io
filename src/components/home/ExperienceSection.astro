@@ -1,0 +1,121 @@
+---
+import type { Profile } from '@/data/profile';
+
+interface Props {
+  profile: Profile | null;
+}
+
+const { profile } = Astro.props;
+---
+
+<section class="section story-section" id="experience" aria-labelledby="experience-heading">
+  <div class="shell section-layout">
+    <h2 id="experience-heading" data-reveal="section">Experience</h2>
+    <div>
+      {
+        profile ? (
+          <>
+            {profile.experience.length > 0 ? (
+              <ol class="experience-list">
+                {profile.experience.map((entry) => (
+                  <li>
+                    <p class="period">{entry.period}</p>
+                    <h3>{entry.title}</h3>
+                    <p class="organization">{entry.organization}</p>
+                    <p>{entry.summary}</p>
+                  </li>
+                ))}
+              </ol>
+            ) : (
+              <p class="empty">No owner-approved experience entries have been supplied.</p>
+            )}
+            <dl class="capabilities">
+              {profile.capabilities.map((capability) => (
+                <div>
+                  <dt>{capability.label}</dt>
+                  <dd>{capability.detail}</dd>
+                </div>
+              ))}
+            </dl>
+          </>
+        ) : (
+          <p class="empty">
+            Experience and capabilities are not configured for this local preview.
+          </p>
+        )
+      }
+    </div>
+  </div>
+</section>
+
+<style>
+  .experience-list,
+  .capabilities {
+    margin: 0;
+    padding: 0;
+  }
+
+  .experience-list {
+    display: grid;
+    gap: var(--space-6);
+    list-style: none;
+  }
+
+  .experience-list li {
+    display: grid;
+    grid-template-columns: minmax(7rem, 0.4fr) minmax(0, 1.6fr);
+    gap: var(--space-2) var(--space-5);
+  }
+
+  .period {
+    grid-row: 1 / span 3;
+    color: var(--color-vermilion-strong);
+    font-family: var(--font-mono);
+    font-size: var(--step--1);
+  }
+
+  h3,
+  p,
+  dd {
+    margin: 0;
+  }
+
+  h3,
+  dt {
+    font-size: var(--step-1);
+    font-weight: 500;
+  }
+
+  .organization,
+  .empty,
+  dd {
+    color: var(--color-ink-muted);
+  }
+
+  .capabilities {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--space-5);
+    margin-top: var(--space-7);
+  }
+
+  .capabilities div {
+    border-left: 0.18rem solid var(--color-vermilion);
+    padding-left: var(--space-4);
+  }
+
+  dt {
+    margin-bottom: var(--space-2);
+  }
+
+  @media (max-width: 47.99rem) {
+    .experience-list li,
+    .capabilities {
+      grid-template-columns: 1fr;
+    }
+
+    .period {
+      grid-row: auto;
+    }
+  }
+</style>

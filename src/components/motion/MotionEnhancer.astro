@@ -1,0 +1,14 @@
+<script>
+  import { enhanceMotion } from '@/lib/motion/enhance';
+
+  let currentRun: Promise<void> | undefined;
+
+  const run = () => {
+    currentRun ??= enhanceMotion().finally(() => {
+      currentRun = undefined;
+    });
+  };
+
+  document.addEventListener('astro:page-load', run);
+  run();
+</script>

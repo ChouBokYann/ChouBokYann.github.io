@@ -1,0 +1,54 @@
+---
+import type { Profile } from '@/data/profile';
+import { buildContactLinks } from '@/lib/homepage-state';
+
+interface Props {
+  profile: Profile | null;
+}
+
+const { profile } = Astro.props;
+const links = buildContactLinks(profile);
+---
+
+<section class="section story-section" id="contact" aria-labelledby="contact-heading">
+  <div class="shell section-layout">
+    <h2 id="contact-heading" data-reveal="section">Contact</h2>
+    {
+      links.length > 0 ? (
+        <ul>
+          {links.map((link) => (
+            <li>
+              <a href={link.href} target={link.target} rel={link.rel}>
+                {link.label}
+              </a>
+            </li>
+          ))}
+        </ul>
+      ) : (
+        <p>Profile details have not been configured for this local preview.</p>
+      )
+    }
+  </div>
+</section>
+
+<style>
+  ul {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-4);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  a {
+    color: var(--color-vermilion-strong);
+    font-size: var(--step-1);
+  }
+
+  p {
+    max-width: 50ch;
+    margin: 0;
+    color: var(--color-ink-muted);
+  }
+</style>

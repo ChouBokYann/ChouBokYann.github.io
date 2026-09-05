@@ -1,0 +1,87 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import { withBase } from '@/lib/url';
+---
+
+<BaseLayout
+  title="Résumé | AI Engineering Portfolio"
+  description="Résumé availability for this AI engineering portfolio preview."
+  indexable={false}
+  enhanceMotion={false}
+>
+  <section class="resume-page" aria-labelledby="resume-heading">
+    <div class="shell resume-layout">
+      <header>
+        <h1 id="resume-heading">Résumé</h1>
+        <p>For my latest résumé, please get in touch.</p>
+      </header>
+      <div class="availability-note">
+        <p>You can find my experience on the homepage.</p>
+        <a href={withBase('/#contact')}>Contact Bok Yann</a>
+      </div>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .resume-page {
+    display: grid;
+    min-height: calc(100dvh - 8.5rem);
+    align-items: center;
+    padding-block: var(--space-7);
+  }
+
+  .resume-layout {
+    display: grid;
+    grid-template-columns: minmax(0, 1.25fr) minmax(16rem, 0.75fr);
+    gap: var(--space-7);
+    align-items: end;
+  }
+
+  header,
+  .availability-note {
+    display: grid;
+    gap: var(--space-3);
+  }
+
+  h1,
+  p {
+    margin: 0;
+  }
+
+  h1 {
+    font-family: var(--font-display);
+    font-size: var(--step-3);
+    font-weight: 400;
+    line-height: 1.04;
+    letter-spacing: -0.035em;
+  }
+
+  header p {
+    max-width: 30ch;
+    color: var(--color-ink-muted);
+    font-size: var(--step-1);
+  }
+
+  .availability-note {
+    padding-top: var(--space-5);
+    border-top: 1px solid var(--color-night-700);
+    color: var(--color-ink-muted);
+  }
+
+  .availability-note a {
+    justify-self: start;
+    color: var(--color-vermilion-strong);
+  }
+
+  @media (max-width: 47.99rem) {
+    .resume-page {
+      align-items: start;
+    }
+
+    .resume-layout {
+      grid-template-columns: 1fr;
+      gap: var(--space-6);
+    }
+  }
+</style>

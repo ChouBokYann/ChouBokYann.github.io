@@ -1,0 +1,93 @@
+---
+import GalleryGrid from '@/components/gallery/GalleryGrid.astro';
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import { getPublishedGalleryItems } from '@/lib/content/gallery';
+import { withBase } from '@/lib/url';
+
+const entries = await getPublishedGalleryItems();
+const returnHref = withBase('/#interests');
+---
+
+<BaseLayout
+  title="Photography | AI Engineering Portfolio"
+  description="Travel photographs by Bok Yann: small moments and cherry blossoms in Japan."
+>
+  <section class="gallery-page" aria-labelledby="gallery-heading">
+    <div class="shell gallery-layout">
+      <header>
+        <h1 id="gallery-heading" data-reveal="hero">Photography</h1>
+        <p>Places I've explored, moments I've kept. A few photographs from Japan.</p>
+      </header>
+
+      {
+        entries.length > 0 ? (
+          <GalleryGrid entries={entries} />
+        ) : (
+          <p class="empty-state">The gallery will open after the first curated set is ready.</p>
+        )
+      }
+
+      <a class="return-link" href={returnHref}>Return to interests</a>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .gallery-page {
+    min-height: calc(100dvh - 8.5rem);
+    padding-block: clamp(var(--space-6), 10vw, var(--space-8));
+  }
+
+  .gallery-layout {
+    display: grid;
+    gap: var(--space-7);
+  }
+
+  header {
+    display: grid;
+    max-width: 42rem;
+    gap: var(--space-3);
+  }
+
+  h1,
+  p {
+    margin: 0;
+  }
+
+  h1 {
+    font-family: var(--font-display);
+    font-size: var(--step-3);
+    font-weight: 400;
+    line-height: 1.02;
+    letter-spacing: -0.035em;
+  }
+
+  header p {
+    max-width: 38ch;
+    color: var(--color-ink-muted);
+    font-size: var(--step-1);
+  }
+
+  .empty-state {
+    max-width: 42rem;
+    padding-top: var(--space-5);
+    border-top: 1px solid var(--color-night-700);
+    color: var(--color-ink-muted);
+    font-size: var(--step-1);
+  }
+
+  .return-link {
+    justify-self: start;
+    color: var(--color-vermilion-strong);
+  }
+
+  @media (max-width: 47.99rem) {
+    .gallery-page {
+      padding-block: var(--space-7);
+    }
+
+    .gallery-layout {
+      gap: var(--space-6);
+    }
+  }
+</style>

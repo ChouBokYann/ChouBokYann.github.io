@@ -1,0 +1,885 @@
+---
+import { withBase } from '@/lib/url';
+
+const art = (filename: string) => withBase(`/art/hero-v2/${filename}`);
+const HeroLayoutLab = import.meta.env.DEV ? (await import('./HeroLayoutLab.astro')).default : null;
+const petals = [
+  [6, -7.1, 12.8, -34, 0.72],
+  [12, -2.4, 10.2, 26, 0.9],
+  [19, -9.6, 15.1, -18, 0.64],
+  [27, -4.8, 11.7, 42, 0.78],
+  [36, -12.3, 14.4, -28, 1],
+  [43, -1.1, 9.8, 18, 0.68],
+  [52, -8.2, 13.6, 38, 0.86],
+  [61, -5.5, 16.2, -42, 0.62],
+  [68, -13.7, 11.1, 23, 0.94],
+  [74, -3.2, 14.8, -31, 0.74],
+  [80, -10.9, 10.7, 46, 0.82],
+  [85, -6.4, 15.6, -22, 1],
+  [89, -14.1, 12.1, 31, 0.66],
+  [93, -4.1, 16.8, -37, 0.88],
+  [96, -11.8, 13.2, 19, 0.7],
+  [99, -1.9, 9.5, -29, 0.92],
+] as const;
+---
+
+<div class="hero-stage">
+  <figure
+    class="hero-artwork"
+    aria-label="Pixel-art view of the sun rising behind Mount Fuji."
+    data-hero-artwork
+    data-time-phase="dawn"
+    data-motion-style="cinematic"
+    data-reveal="hero"
+  >
+    <div class="hero-artwork__base" data-scene-base aria-hidden="true">
+      <picture>
+        <source media="(orientation: portrait)" srcset={art('option-c/portrait.png')} />
+        <source media="(min-aspect-ratio: 2/1)" srcset={art('option-c/ultrawide.png')} />
+        <img
+          src={art('option-c/desktop.png')}
+          width="1672"
+          height="941"
+          alt=""
+          decoding="async"
+          fetchpriority="high"
+        />
+      </picture>
+    </div>
+    <div class="hero-artwork__layer hero-artwork__sky" data-layer="sky" aria-hidden="true">
+      <img
+        src={art('sky.png')}
+        width="2048"
+        height="1152"
+        alt=""
+        decoding="async"
+        fetchpriority="high"
+      />
+    </div>
+    <div
+      class="hero-artwork__layer hero-artwork__clouds"
+      data-layer="clouds"
+      data-motion-layer="clouds"
+      aria-hidden="true"
+    >
+      <img src={art('clouds.png')} width="2048" height="1152" alt="" decoding="async" />
+    </div>
+    <div
+      class="hero-artwork__layer hero-artwork__lake"
+      data-layer="lake"
+      data-motion-layer="lake"
+      aria-hidden="true"
+    >
+      <img src={art('lake.png')} width="2048" height="1152" alt="" decoding="async" />
+    </div>
+    <div
+      class="hero-artwork__layer hero-artwork__distant-town"
+      data-layer="distant-town"
+      aria-hidden="true"
+    >
+      <img src={art('distant-town.png')} width="2048" height="1152" alt="" decoding="async" />
+    </div>
+    <button
+      class="hero-artwork__target hero-artwork__fuji"
+      type="button"
+      aria-label="Discover the Mount Fuji secret"
+      aria-expanded="false"
+      data-layer="fuji"
+      data-motion-layer="fuji"
+      data-fuji-secret-trigger
+    >
+      <img
+        src={art('fuji.png')}
+        width="2048"
+        height="1152"
+        alt=""
+        aria-hidden="true"
+        decoding="async"
+        fetchpriority="high"
+      />
+    </button>
+    <div
+      class="hero-artwork__layer hero-artwork__right-bank"
+      data-layer="right-bank"
+      aria-hidden="true"
+    >
+      <img src={art('right-bank.png')} width="2048" height="1152" alt="" decoding="async" />
+    </div>
+    <div
+      class="hero-artwork__treetops"
+      data-motion-layer="trees"
+      style={`--treetops-image: url("${art('scene-clean.png')}"); --treetops-portrait: url("${art('scene-clean-portrait.png')}")`}
+      aria-hidden="true"
+    >
+    </div>
+    <div class="hero-artwork__layer hero-artwork__houses" data-layer="houses" aria-hidden="true">
+      <img src={art('houses.png')} width="2048" height="1152" alt="" decoding="async" />
+    </div>
+    <div
+      class="hero-artwork__layer hero-artwork__left-sakura"
+      data-layer="left-sakura"
+      aria-hidden="true"
+    >
+      <img src={art('left-sakura.png')} width="1536" height="2048" alt="" decoding="async" />
+    </div>
+    <div class="hero-artwork__layer hero-artwork__torii" data-layer="torii" aria-hidden="true">
+      <img src={art('torii.png')} width="1536" height="2048" alt="" decoding="async" />
+    </div>
+    <div class="hero-artwork__layer hero-artwork__dock" data-layer="dock" aria-hidden="true">
+      <img src={art('dock.png')} width="2048" height="1152" alt="" decoding="async" />
+    </div>
+    <button
+      class="hero-artwork__layer hero-artwork__bok-yann"
+      type="button"
+      aria-label="Animate Bok Yann"
+      data-layer="bok-yann"
+      data-motion-layer="person"
+      data-person-motion="idle"
+      style={`--wave-strip: url("${art('bok-yann-wave-pixel.png')}")`}
+    >
+      <picture>
+        <source media="(orientation: portrait)" srcset={art('scene-base-portrait.png')} />
+        <img src={art('scene-base.png')} width="1672" height="941" alt="" decoding="async" />
+      </picture>
+      <span class="hero-artwork__wave" aria-hidden="true"></span>
+    </button>
+    <div
+      class="hero-artwork__layer hero-artwork__near-sakura"
+      data-layer="near-sakura"
+      aria-hidden="true"
+    >
+      <img src={art('near-sakura.png')} width="1536" height="1024" alt="" decoding="async" />
+    </div>
+    <div class="hero-artwork__blossom-sway" data-blossom-sway aria-hidden="true"
+      style={`--blossom-scene: url("${art('scene-clean.png')}"); --blossom-portrait: url("${art('scene-clean-portrait.png')}")`}></div>
+    <div class="hero-artwork__petals" data-motion-layer="petals" aria-hidden="true">
+      {
+        petals.map(([start, delay, duration, drift, scale]) => (
+          <i
+            data-petal
+            data-start={start}
+            data-drift={drift}
+            data-duration={duration}
+            style={`--petal-x:${start}%;--petal-delay:${delay}s;--petal-duration:${duration}s;--petal-drift:${drift}px;--petal-scale:${scale}`}
+          />
+        ))
+      }
+    </div>
+    <p class="hero-artwork__secret" role="status" data-fuji-secret hidden>
+      Keep climbing — the view changes with every step.
+    </p>
+    <div class="hero-artwork__title" data-layer="title"><slot name="title" /></div>
+  </figure>
+  <slot />
+  {HeroLayoutLab && <HeroLayoutLab />}
+</div>
+
+<script>
+  import { getHeroTimeScene } from './time';
+  import { setupHeroMotion } from './motion';
+
+  function applyLocalHeroTime(): void {
+    document
+      .querySelectorAll<HTMLElement>('[data-hero-artwork]:not([data-time-resolved])')
+      .forEach((artwork) => {
+        const scene = getHeroTimeScene(new Date());
+        artwork.dataset.timePhase = scene.phase;
+        artwork.dataset.timeResolved = 'true';
+        artwork.style.setProperty('--sun-x', `${scene.sunX}%`);
+        artwork.style.setProperty('--sun-y', `${scene.sunY}%`);
+        artwork.style.setProperty('--sun-opacity', String(scene.sunOpacity));
+      });
+  }
+
+  function setupFujiSecrets(): void {
+    document.querySelectorAll<HTMLElement>('[data-hero-artwork]').forEach((artwork) => {
+      const trigger = artwork.querySelector<HTMLButtonElement>('[data-fuji-secret-trigger]');
+      const message = artwork.querySelector<HTMLElement>('[data-fuji-secret]');
+      if (!trigger || !message || trigger.dataset.secretReady) return;
+      trigger.dataset.secretReady = 'true';
+      trigger.addEventListener('click', () => {
+        const willOpen = message.hidden;
+        message.hidden = !willOpen;
+        trigger.setAttribute('aria-expanded', String(willOpen));
+      });
+    });
+  }
+
+  document.addEventListener('astro:page-load', () => {
+    applyLocalHeroTime();
+    setupFujiSecrets();
+    setupHeroMotion();
+  });
+  applyLocalHeroTime();
+  setupFujiSecrets();
+  setupHeroMotion();
+</script>
+
+<style>
+  /* Preserve the complete approved composition rather than cover-cropping it. */
+  .hero-stage { aspect-ratio:1672 / 941; }
+  @media (min-aspect-ratio:2/1) { .hero-stage { aspect-ratio:1915 / 821; } }
+  @media (orientation:portrait) { .hero-stage { aspect-ratio:941 / 1672; } }
+  .hero-stage {
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
+    width: 100%;
+    min-height: 0;
+    background: #12192c;
+  }
+
+  .hero-stage::after {
+    position: absolute;
+    z-index: 4;
+    inset: 0;
+    background:
+      linear-gradient(0deg, rgb(8 11 20 / 0.78) 0%, rgb(8 11 20 / 0.22) 28%, transparent 52%),
+      radial-gradient(circle at 50% 76%, rgb(8 11 20 / 0.24), transparent 32%);
+    content: '';
+    pointer-events: none;
+  }
+
+  .hero-artwork {
+    --sun-x: 22%;
+    --sun-y: 42%;
+    --sun-opacity: 1;
+    --scene-shade-opacity: 0;
+    --fuji-brightness: 1;
+    z-index: 0;
+    isolation: isolate;
+    overflow: hidden;
+    position: absolute;
+    inset: 0;
+    margin: 0;
+    width: 100%;
+    height: 100%;
+    background: #12192c;
+  }
+
+  .hero-artwork::after {
+    position: absolute;
+    z-index: 1;
+    inset: 0;
+    background: rgb(5 8 18 / var(--scene-shade-opacity));
+    content: '';
+    pointer-events: none;
+  }
+
+  .hero-artwork[data-time-phase='evening'] {
+    --scene-shade-opacity: 0.1;
+    --fuji-brightness: 0.94;
+  }
+
+  .hero-artwork[data-time-phase='night'] {
+    --scene-shade-opacity: 0.24;
+    --fuji-brightness: 0.82;
+  }
+
+  .hero-artwork__layer {
+    position: absolute;
+    pointer-events: none;
+  }
+
+  .hero-artwork__base {
+    position: absolute;
+    z-index: 0;
+    inset: 0;
+  }
+
+  .hero-artwork__base picture {
+    display: block;
+    width: 100%;
+    height: 100%;
+  }
+
+  .hero-artwork img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    max-width: none;
+    pointer-events: none;
+    user-select: none;
+  }
+
+  .hero-artwork__target,
+  .hero-artwork__title {
+    position: absolute;
+  }
+
+  .hero-artwork__target {
+    padding: 0;
+    border: 0;
+    background: transparent;
+    cursor: pointer;
+  }
+
+  .hero-artwork__base img,
+  .hero-artwork__layer img,
+  .hero-artwork__target img {
+    object-fit: contain;
+  }
+
+  .hero-artwork__base img {
+    object-fit: cover;
+    object-position: center;
+  }
+
+  /* The complete plate preserves shoreline, reflections and perspective. The
+     isolated exports remain as semantic interaction regions until their clean
+     plates are approved, avoiding duplicated or misaligned scenery. */
+  .hero-artwork__layer img,
+  .hero-artwork__target img {
+    opacity: 0;
+  }
+
+  .hero-artwork__sky {
+    z-index: 1;
+    inset: 0;
+  }
+  .hero-artwork__sky img {
+    object-fit: cover;
+  }
+  .hero-artwork__clouds {
+    z-index: 1;
+    inset: -1%;
+    opacity: 0.1;
+  }
+  .hero-artwork__lake {
+    z-index: 2;
+    inset: 0;
+    opacity: 0.07;
+    mix-blend-mode: screen;
+  }
+  .hero-artwork__distant-town {
+    z-index: 3;
+    bottom: 27%;
+    left: 3%;
+    width: 94%;
+    height: 23%;
+  }
+  .hero-artwork__right-bank {
+    z-index: 5;
+    right: -4%;
+    bottom: 8%;
+    width: 56%;
+    height: 51%;
+  }
+  .hero-artwork__treetops {
+    position: absolute;
+    z-index: 5;
+    inset: 0;
+    background: var(--treetops-image) center / 100% 100% no-repeat;
+    clip-path: polygon(73% 64%, 78% 54%, 83% 50%, 88% 43%, 93% 34%, 100% 29%, 100% 49%, 93% 52%, 87% 53%, 82% 59%, 77% 65%);
+    pointer-events: none;
+    transform-origin: 90% 58%;
+  }
+  .hero-artwork__houses {
+    z-index: 6;
+    right: 4%;
+    bottom: 14%;
+    width: 27%;
+    height: 34%;
+  }
+  .hero-artwork__left-sakura {
+    z-index: 7;
+    bottom: 0;
+    left: -3%;
+    width: 31%;
+    height: 58%;
+  }
+  .hero-artwork__torii {
+    z-index: 8;
+    bottom: 22%;
+    left: 11%;
+    width: 15%;
+    height: 27%;
+  }
+  .hero-artwork__dock {
+    z-index: 9;
+    bottom: -6%;
+    left: 20%;
+    width: 62%;
+    height: 47%;
+  }
+  .hero-artwork__bok-yann {
+    z-index: 10;
+    bottom: 7%;
+    left: 47%;
+    width: 8%;
+    height: 22%;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    cursor: pointer;
+    pointer-events: auto;
+  }
+  .hero-artwork__near-sakura {
+    z-index: 11;
+    top: -3%;
+    right: -1%;
+    width: 34%;
+    height: 48%;
+    transform-origin: top right;
+    animation: sakura-sway 7s ease-in-out infinite alternate;
+  }
+
+  .hero-artwork__clouds img,
+  .hero-artwork__lake img {
+    object-fit: cover;
+    opacity: 1;
+  }
+
+  .hero-artwork__bok-yann img {
+    opacity: 1;
+    object-fit: contain;
+    filter: drop-shadow(0 0.2rem 0.25rem rgb(8 11 20 / 0.22));
+  }
+
+  .hero-artwork__bok-yann:focus-visible {
+    outline: 0.14rem solid var(--color-focus);
+    outline-offset: 0.15rem;
+  }
+
+  .hero-artwork__petals {
+    position: absolute;
+    z-index: 11;
+    inset: 0;
+    overflow: hidden;
+    pointer-events: none;
+  }
+
+  .hero-artwork__petals i {
+    position: absolute;
+    top: -4%;
+    left: var(--petal-x);
+    width: 0.46rem;
+    height: 0.3rem;
+    background: #ffd0d9;
+    box-shadow: 0.14rem 0.1rem 0 #c66f88;
+    opacity: 0;
+    transform: scale(var(--petal-scale));
+    animation: petal-fall var(--petal-duration) linear var(--petal-delay) infinite;
+    image-rendering: pixelated;
+  }
+
+  .hero-artwork[data-motion-style='cinematic'] .hero-artwork__treetops {
+    animation: tree-sway 9s ease-in-out infinite;
+  }
+  .hero-artwork[data-motion-style='cinematic'] .hero-artwork__lake {
+    animation: water-shimmer 5.8s ease-in-out infinite alternate;
+  }
+  .hero-artwork__bok-yann[data-person-motion='active'] {
+    animation: none;
+    clip-path: inset(75% 43% 9% 47%);
+  }
+  .hero-artwork__bok-yann[data-person-motion='active'] picture { visibility: hidden; }
+  .hero-artwork__wave { display: none; position: absolute; left: 49.1%; top: 76.3%; width: 6.15%; height: 14.5%; background: var(--wave-strip) 0% 0% / 400% 100% no-repeat; image-rendering: pixelated; }
+  .hero-artwork__bok-yann[data-person-motion='active'] .hero-artwork__wave { display: block; }
+
+  .hero-artwork__target {
+    border-radius: var(--radius-small);
+    filter: brightness(var(--layer-brightness, 1));
+    transition:
+      filter var(--duration-fast) var(--ease-out),
+      transform var(--duration-fast) var(--ease-out);
+  }
+
+  .hero-artwork__target::after {
+    position: absolute;
+    inset: 12% 7% 9%;
+    border-radius: 50%;
+    background: radial-gradient(ellipse, rgb(255 226 161 / 0.28), transparent 68%);
+    content: '';
+    opacity: 0;
+    transition: opacity var(--duration-fast) var(--ease-out);
+    pointer-events: none;
+  }
+
+  .hero-artwork__target:hover,
+  .hero-artwork__target:focus-visible {
+    filter: none;
+  }
+
+  .hero-artwork__target:hover::after,
+  .hero-artwork__target:focus-visible::after {
+    opacity: 0;
+  }
+
+  .hero-artwork__target:focus-visible {
+    outline: 0.18rem solid var(--color-focus);
+    outline-offset: 0.22rem;
+  }
+
+  .hero-artwork__title {
+    z-index: 12;
+    top: 12%;
+    left: 7%;
+    width: min(34vw, 31rem);
+    text-align: left;
+  }
+
+  .hero-artwork__secret {
+    position: absolute;
+    z-index: 13;
+    right: 18%;
+    bottom: 30%;
+    max-width: 18rem;
+    margin: 0;
+    padding: 0.65rem 0.85rem;
+    border: 1px solid rgb(255 239 204 / 0.46);
+    border-radius: var(--radius-small);
+    background: rgb(8 11 20 / 0.82);
+    color: #fff4d7;
+    font-size: 0.82rem;
+    box-shadow: 0 0.75rem 2rem rgb(0 0 0 / 0.28);
+  }
+
+  .hero-artwork__secret[hidden] {
+    display: none;
+  }
+
+  .hero-artwork__fuji {
+    --layer-brightness: var(--fuji-brightness);
+    z-index: 4;
+    right: 13%;
+    bottom: 25%;
+    width: 49%;
+    height: 47%;
+  }
+
+  .hero-artwork__fuji:hover,
+  .hero-artwork__fuji:focus-visible {
+    transform: scale(1.008);
+  }
+
+  @media (min-width: 48rem) and (max-width: 63.99rem) {
+    .hero-artwork__title {
+      top: 11%;
+      width: min(39vw, 25rem);
+    }
+    .hero-artwork__lake {
+      inset: 0;
+    }
+    .hero-artwork__distant-town {
+      bottom: 29%;
+      height: 21%;
+    }
+    .hero-artwork__fuji {
+      right: 4%;
+      bottom: 24%;
+      width: 61%;
+      height: 46%;
+    }
+    .hero-artwork__right-bank {
+      right: -6%;
+      bottom: 10%;
+      width: 59%;
+      height: 53%;
+    }
+    .hero-artwork__houses {
+      right: 1%;
+      bottom: 15%;
+      width: 31%;
+      height: 34%;
+    }
+    .hero-artwork__left-sakura {
+      bottom: 2%;
+      left: -6%;
+      width: 34%;
+      height: 54%;
+    }
+    .hero-artwork__torii {
+      bottom: 22%;
+      left: 8%;
+      width: 17%;
+      height: 25%;
+    }
+    .hero-artwork__dock {
+      bottom: -5%;
+      left: 14%;
+      width: 73%;
+      height: 45%;
+    }
+    .hero-artwork__bok-yann {
+      bottom: 8%;
+      left: 47%;
+      width: 9%;
+      height: 20%;
+    }
+    .hero-artwork__near-sakura {
+      top: -2%;
+      width: 38%;
+      height: 43%;
+    }
+  }
+
+  @media (max-width: 47.99rem) {
+    .hero-stage::after {
+      background:
+        linear-gradient(0deg, rgb(8 11 20 / 0.78) 4%, rgb(8 11 20 / 0.28) 42%, transparent 70%),
+        linear-gradient(90deg, rgb(8 11 20 / 0.12), transparent 55%);
+    }
+
+    .hero-artwork__title {
+      top: 10%;
+      left: 7%;
+      width: min(70%, 20rem);
+    }
+
+    .hero-artwork__base img {
+      object-position: 50% center;
+    }
+
+    .hero-artwork__secret {
+      right: 7%;
+      bottom: 29%;
+      left: 7%;
+      max-width: none;
+      text-align: center;
+    }
+
+    .hero-artwork__fuji {
+      right: -10%;
+      bottom: 34%;
+      left: auto;
+      width: 100%;
+      height: 32%;
+    }
+
+    .hero-artwork__sky img {
+      object-position: 54% center;
+    }
+    .hero-artwork__clouds {
+      inset: -1%;
+    }
+    .hero-artwork__lake {
+      inset: 0;
+    }
+    .hero-artwork__distant-town {
+      bottom: 34%;
+      left: -16%;
+      width: 128%;
+      height: 28%;
+    }
+    .hero-artwork__fuji {
+      right: -24%;
+      bottom: 17%;
+      width: 142%;
+      height: 56%;
+    }
+    .hero-artwork__right-bank {
+      right: -35%;
+      bottom: 10%;
+      width: 106%;
+      height: 57%;
+    }
+    .hero-artwork__houses {
+      right: -10%;
+      bottom: 17%;
+      width: 59%;
+      height: 37%;
+    }
+    .hero-artwork__left-sakura {
+      bottom: 22%;
+      left: -8%;
+      width: 38%;
+      height: 42%;
+    }
+    .hero-artwork__torii {
+      bottom: 27%;
+      left: 3%;
+      width: 28%;
+      height: 25%;
+    }
+    .hero-artwork__dock {
+      bottom: -10%;
+      left: -7%;
+      width: 113%;
+      height: 45%;
+    }
+    .hero-artwork__bok-yann {
+      bottom: 10%;
+      left: 46%;
+      width: 14%;
+      height: 22%;
+    }
+    .hero-artwork__near-sakura {
+      top: 2%;
+      right: -7%;
+      width: 39%;
+      height: 32%;
+    }
+  }
+
+  @keyframes sakura-sway {
+    from {
+      transform: rotate(-0.45deg);
+    }
+    to {
+      transform: rotate(0.45deg);
+    }
+  }
+  @keyframes tree-sway {
+    0%, 100% {
+      transform: rotate(-0.32deg) skewX(-0.25deg);
+    }
+    45% {
+      transform: rotate(0.4deg) skewX(0.3deg);
+    }
+    72% {
+      transform: rotate(0.05deg) skewX(0.06deg);
+    }
+  }
+  @keyframes water-shimmer {
+    from {
+      opacity: 0.055;
+      transform: translateX(-1px) scaleX(1.001);
+    }
+    to {
+      opacity: 0.13;
+      transform: translateX(1px) scaleX(0.999);
+    }
+  }
+  @keyframes petal-fall {
+    0% {
+      opacity: 0;
+      transform: translate3d(0, -4vh, 0) rotate(0deg) scale(var(--petal-scale));
+    }
+    12% {
+      opacity: 0.82;
+    }
+    55% {
+      transform: translate3d(calc(var(--petal-drift) * -0.35), 48vh, 0) rotate(132deg)
+        scale(var(--petal-scale));
+    }
+    88% {
+      opacity: 0.72;
+    }
+    100% {
+      opacity: 0;
+      transform: translate3d(var(--petal-drift), 104vh, 0) rotate(310deg) scale(var(--petal-scale));
+    }
+  }
+  @keyframes person-wave {
+    from {
+      transform: translateY(0) rotate(-0.25deg);
+    }
+    to {
+      transform: translateY(-2px) rotate(0.45deg);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .hero-artwork__target,
+    .hero-artwork__layer,
+    .hero-artwork__treetops,
+    .hero-artwork__petals {
+      transition: none;
+      animation: none;
+    }
+
+    .hero-artwork__petals {
+      display: none;
+    }
+  }
+
+  /* Original scene pixels clipped to the figure, on the same cover-sized canvas
+     as the clean plate. Breakpoints must never independently size this layer. */
+  .hero-artwork__bok-yann {
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    clip-path: polygon(52.1% 76.9%, 52.55% 77.1%, 52.8% 78%, 52.7% 79%, 53.2% 79.6%, 53.7% 81.7%, 53.8% 83.2%, 53.5% 84.5%, 53.15% 85%, 53.1% 89.8%, 52.7% 90.35%, 52.25% 90.2%, 52.2% 87.3%, 51.95% 90.25%, 51.5% 90.1%, 51.45% 85%, 51.05% 84.4%, 50.85% 82.8%, 50.95% 80.8%, 51.35% 79.4%, 51.85% 79%, 51.8% 77.8%);
+    transform-origin: 52.3% 90%;
+  }
+  .hero-artwork__bok-yann picture { display: block; width: 100%; height: 100%; }
+  .hero-artwork__bok-yann img { object-fit: fill; filter: none; }
+  @media (orientation: portrait) {
+    .hero-artwork__treetops { background-image: var(--treetops-portrait); clip-path: polygon(53% 58%, 65% 49%, 75% 46%, 85% 40%, 94% 37%, 100% 37%, 100% 51%, 88% 52%, 74% 56%, 64% 59%); transform-origin: 86% 55%; }
+    .hero-artwork__wave { left: 54.15%; top: 73.8%; width: 12.9%; height: 9.55%; }
+    .hero-artwork__bok-yann[data-person-motion='active'] { clip-path: inset(73% 32% 16% 53%); }
+    .hero-artwork__bok-yann {
+      clip-path: polygon(59.8% 74.1%, 60.65% 74.15%, 61.2% 74.65%, 61.1% 75.2%, 60.8% 75.5%, 62% 75.9%, 62.8% 77.2%, 63% 78.5%, 62.4% 79.2%, 61.95% 79.4%, 61.85% 82.5%, 61.1% 83.1%, 60.25% 82.95%, 60.3% 80.7%, 59.7% 83.1%, 58.7% 82.95%, 58.6% 79.4%, 57.6% 78.8%, 57.4% 77.8%, 57.85% 76.4%, 58.7% 75.65%, 59.5% 75.5%, 59.2% 75%);
+      transform-origin: 60% 83%;
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .hero-artwork[data-motion-style='cinematic'] .hero-artwork__treetops,
+    .hero-artwork[data-motion-style='cinematic'] .hero-artwork__lake { animation: none; }
+  }
+  /* Every pose comes from the same strip, including the back-facing idle pose. */
+  .hero-artwork__bok-yann { clip-path: inset(75% 43% 9% 47%); }
+  .hero-artwork__bok-yann picture { visibility: hidden; }
+  .hero-artwork__wave { display: block; }
+  @media (orientation: portrait) {
+    .hero-artwork__bok-yann { clip-path: inset(73% 32% 16% 53%); }
+  }
+  .hero-artwork__blossom-sway { position: absolute; inset: 0; z-index: 11; pointer-events: none; }
+  .hero-artwork .hero-artwork__wave { left:48.8%; top:79%; width:6.15%; height:14.5%; }
+  .hero-artwork .hero-artwork__bok-yann { clip-path:inset(78% 43% 5% 47%); }
+  @media (min-aspect-ratio:2/1) {
+    .hero-artwork .hero-artwork__wave { left:48%; top:76%; width:5.4%; height:16%; }
+    .hero-artwork .hero-artwork__bok-yann { clip-path:inset(75% 43% 6% 46%); }
+  }
+  @media (orientation:portrait) {
+    .hero-artwork .hero-artwork__wave { left:44%; top:73.5%; width:12%; height:10%; }
+    .hero-artwork .hero-artwork__bok-yann { clip-path:inset(72% 40% 15% 42%); }
+    .hero-artwork__fuji { left:30%; right:auto; bottom:38%; width:56%; height:20%; }
+  }
+  /* Wind now samples the original plate once; duplicate patches create ghosts. */
+  .hero-artwork__blossom-sway,
+  .hero-artwork__treetops { display: none; }
+  .hero-artwork__clouds {
+    inset: auto;
+    top: 1%; left: 24%; width: 62%; height: 25%;
+    opacity: .48;
+    pointer-events: none;
+    animation: cloud-passage 22s ease-in-out infinite alternate;
+  }
+  .hero-artwork__clouds img {
+    object-fit: fill;
+    filter: saturate(.55);
+  }
+  @keyframes cloud-passage {
+    from { transform: translateX(-4%); }
+    to { transform: translateX(5%); }
+  }
+  .hero-artwork[data-atmosphere-paused] .hero-artwork__clouds { animation-play-state: paused; }
+  @media (orientation: portrait) {
+    .hero-artwork__clouds { top: 3%; left: 6%; width: 86%; height: 17%; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .hero-artwork__clouds { animation: none; }
+  }
+  .hero-artwork__blossom-sway::before,
+  .hero-artwork__blossom-sway::after {
+    content: ''; position: absolute; inset: 0;
+    background: var(--blossom-scene) center / 100% 100% no-repeat;
+    animation: blossom-breeze 6.5s ease-in-out infinite alternate;
+  }
+  .hero-artwork__blossom-sway::before {
+    clip-path: polygon(76% 0,100% 0,100% 30%,94% 23%,86% 20%,80% 14%);
+    mask-image: radial-gradient(ellipse at 100% 0,black 22%,transparent 38%);
+    transform-origin: 100% 8%;
+  }
+  .hero-artwork__blossom-sway::after {
+    clip-path: polygon(0 27%,8% 35%,15% 50%,19% 67%,12% 75%,0 91%);
+    mask-image: radial-gradient(ellipse at 0 62%,black 14%,transparent 23%);
+    transform-origin: 0 87%; animation-delay: -2.3s; animation-duration: 7.8s;
+  }
+  @keyframes blossom-breeze {
+    from { transform: rotate(-1.1deg); }
+    to { transform: rotate(1.1deg); }
+  }
+  @media (orientation: portrait) {
+    .hero-artwork__blossom-sway::before,
+    .hero-artwork__blossom-sway::after { background-image: var(--blossom-portrait); }
+    .hero-artwork__blossom-sway::before { clip-path: polygon(65% 0,100% 0,100% 37%,73% 28%,79% 16%); }
+    .hero-artwork__blossom-sway::after { clip-path: polygon(0 46%,13% 53%,23% 67%,17% 77%,0 83%); }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .hero-artwork__blossom-sway::before,
+    .hero-artwork__blossom-sway::after { animation: none; }
+  }
+</style>

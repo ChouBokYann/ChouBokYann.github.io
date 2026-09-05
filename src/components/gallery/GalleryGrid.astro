@@ -1,0 +1,32 @@
+---
+import { getImage } from 'astro:assets';
+import type { CollectionEntry } from 'astro:content';
+import GalleryViewer from './GalleryViewer.vue';
+
+interface Props {
+  entries: CollectionEntry<'gallery'>[];
+}
+
+const { entries } = Astro.props;
+const items = await Promise.all(
+  entries.map(async (entry) => {
+    const image = await getImage({ src: entry.data.image, width: 1600, format: 'webp' });
+
+    return {
+      id: entry.id,
+      src: image.src,
+      alt: entry.data.alt,
+      title: entry.data.title,
+      location: entry.data.location,
+      date: entry.data.takenAt?.toLocaleDateString('en', {
+        year: 'numeric',
+        month: 'short',
+      }) ?? '',
+    };
+  }),
+);
+---
+
+<div data-reveal="group">
+  <GalleryViewer items={items} client:visible />
+</div>

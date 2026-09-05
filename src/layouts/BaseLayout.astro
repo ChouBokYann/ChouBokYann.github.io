@@ -1,0 +1,37 @@
+---
+import SiteFooter from '@/components/layout/SiteFooter.astro';
+import SiteNav from '@/components/layout/SiteNav.astro';
+import MotionEnhancer from '@/components/motion/MotionEnhancer.astro';
+import SeoHead from '@/components/seo/SeoHead.astro';
+import '@/styles/global.css';
+
+interface Props {
+  title: string;
+  description: string;
+  image?: string;
+  imageAlt?: string;
+  indexable?: boolean;
+  enhanceMotion?: boolean;
+  type?: 'website' | 'article';
+}
+
+const props = Astro.props;
+const { enhanceMotion = true } = props;
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width" />
+    <meta name="theme-color" content="#0d1018" />
+    <SeoHead {...props} />
+  </head>
+  <body id="top">
+    <a class="skip-link" href="#main-content">Skip to content</a>
+    <SiteNav />
+    <main id="main-content" tabindex="-1"><slot /></main>
+    <SiteFooter />
+    {enhanceMotion && <MotionEnhancer />}
+  </body>
+</html>
